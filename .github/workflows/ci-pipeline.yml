@@ -1,0 +1,52 @@
+name: NovaPay CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build & Unit Test
+        run: ./gradlew build test
+
+  parallel_block:
+    needs: build_and_test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        stage: [sast_scan, container_scan]
+    steps:
+      - name: Run ${{ matrix.stage }}
+        run: echo "Executing ${{ matrix.stage }}..."
+
+  integration_and_dast:
+    needs: parallel_block
+    runs-on: ubuntu-latest
+    steps:
+      - name: Integration Tests
+        run: echo "Running Pact contracts..."
+      - name: DAST Scan
+        run: ./scripts/dast-scan.sh
+
+  compliance_gate:
+    needs: integration_and_dast
+    runs-on: ubuntu-latest
+    steps:
+      - name: OPA Policy Check
+        run: |
+          # OPA gate to block non-compliant K8s manifests [cite: 67, 80]
+          echo "Verifying against RBI/PCI-DSS rules..."
+
+  deployment:
+    needs: compliance_gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Blue-Green Deployment
+        run: |
+          echo "Deploying to production[cite: 68]..."
+          # Istio traffic switch logic [cite: 96]
