@@ -30,22 +30,22 @@ NovaPay is a production-grade, cloud-native banking infrastructure designed usin
 
 ## 📊 Evidence Gallery
 ### 1. 8-Stage DevSecOps Pipeline
-![Pipeline](evidence/screenshots/8-Stage DevSecOps Pipeline.png)
+![Pipeline](Screenshot/8-Stage-DevSecOps-Pipeline.png)
 
 ### 2. Live Kubernetes App
-![Kubernetes App](evidence/screenshots/Live Kubernetes App.png)
+![Kubernetes App](Screenshot/Live-Kubernetes-App.png)
 
 ### 3. LoadBalancer Service (Public Access)
-![LoadBalancer Service](screenshot/3-lb-service.png)
+![LoadBalancer Service](Screenshot/3-lb-service.png)
 
 ### 4. Elite DORA Metrics Dashboard
-![DORA Dashboard](screenshot/Elite_DORA_Dashboards.png)
+![DORA Dashboard](Screenshot/Elite-DORA-Dashboards.png)
 
 ### 5. Monitoring Stack (Prometheus/Grafana)
-![Monitoring Pods](screenshot/monitoring-pods.png)
+![Monitoring Pods](Screenshot/monitoring-pods.png)
 
 ### 6. Docker Build Proof
-![Docker Images](screenshot/docker-images.png)
+![Docker Images](Screenshot/docker-images.png)
 
 ---
 
