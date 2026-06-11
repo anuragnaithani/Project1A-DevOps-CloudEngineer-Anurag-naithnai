@@ -1,39 +1,64 @@
-# NovaPay Digital Bank: DevSecOps CI/CD Platform
+# 🏦 NovaPay Digital Bank: DevSecOps CI/CD Platform
 
 ## 🚀 Executive Summary
-NovaPay is a production-grade, RBI-compliant banking infrastructure designed to transition from manual SSH-based deployments to a **Zero-Downtime, DevSecOps-driven CI/CD platform**. This project reduces MTTR from 4.5 hours to < 15 minutes and enforces automated compliance gates mapped to RBI Master Direction and PCI-DSS v4.0.
-
-## 🏗️ Architecture & Stack
-- **Infrastructure:** AWS EKS (Multi-AZ), Terraform 1.7+
-- **CI/CD:** GitHub Actions (8-stage canonical pipeline)
-- **Deployment:** ArgoCD, Blue-Green/Canary strategies, RollingUpdates
-- **Observability:** Prometheus, Grafana (DORA Metrics: DF, LT, CFR, MTTR)
-- **Security:** Trivy (Vulnerability Scan), OPA (Policy Gates), SAST/DAST simulation
-
-## ⚙️ The 8-Stage Canonical Pipeline
-| Stage | Description | Tooling |
-| :--- | :--- | :--- |
-| 1. Source | Trunk-based, Signed Commits | Git, GPG |
-| 2. Build | Reproducible Multi-stage Build | Gradle, Docker |
-| 3. SAST | Custom Banking Quality Rules | SonarQube |
-| 4. Security Scan | SBOM + CVE Gating (Crit/High) | Trivy, Syft |
-| 5. Contract Test | Consumer-Driven API Testing | Pact |
-| 6. DAST | Runtime Security Analysis | OWASP ZAP |
-| 7. Policy Gate | RBI/PCI-DSS Compliance | OPA, Kyverno |
-| 8. Deployment | Zero-Downtime Verification | EKS, Istio |
-
-## 📊 Observability & Compliance
-Mapped to **RBI Master Direction on IT Risk** and **PCI-DSS v4.0 Requirements 6.2–6.5**.
-- **Alerting:** Automated rollback triggers for SEV-1/SEV-2 incidents.
-- **Monitoring:** Real-time cluster health and SRE-grade DORA metrics.
-
-## 🖼️ Evidence Gallery
-- [Pipeline Architecture](docs/01-pipeline-architecture/architecture.md)
-- [Deployment Proofs](evidence/screenshots/)
-- [DORA Dashboards](dashboards/grafana/)
-
-## 📝 Compliance Audit (Errata)
-- Findings and corrections for technical errors identified in Part A, C, and D are documented in [ERRATA.md](ERRATA.md).
+NovaPay is a production-grade, cloud-native banking infrastructure designed using modern DevSecOps principles. This project demonstrates a fully automated, 8-stage CI/CD pipeline, Kubernetes-based deployment (AWS EKS), observability stack, and security compliance aligned with RBI & PCI-DSS standards.
 
 ---
-*Project administered by Zetheta Algorithms Private Limited.*
+
+## 🎯 Key Architecture Highlights
+- **Infrastructure:** AWS EKS Multi-AZ cluster provisioned via **Terraform**.
+- **CI/CD:** 8-stage automated pipeline using **GitHub Actions**.
+- **Deployment:** Zero-downtime strategy using Kubernetes RollingUpdates.
+- **Observability:** Real-time monitoring stack (Prometheus + Grafana).
+- **Compliance:** Automated policy gates (OPA) and security scanning (Trivy).
+
+---
+
+## 🚀 The 8-Stage Canonical Pipeline
+| Stage | Focus | Tooling |
+| :--- | :--- | :--- |
+| 1 | Source Control & Trigger | GitHub Actions |
+| 2 | Build & Compilation | Gradle/Docker |
+| 3 | Static Analysis (SAST) | SonarQube |
+| 4 | Dependency Security Scan | Trivy |
+| 5 | Container Build | Docker |
+| 6 | Container Security Scan | Trivy/ECR |
+| 7 | Policy & Compliance Gate | OPA/Kyverno |
+| 8 | Deployment & Verification | AWS EKS |
+
+---
+
+## 📊 Evidence Gallery
+### 1. 8-Stage DevSecOps Pipeline
+![Pipeline](evidence/screenshots/8-Stage DevSecOps Pipeline.png)
+
+### 2. Live Kubernetes App
+![Kubernetes App](evidence/screenshots/Live Kubernetes App.png)
+
+### 3. LoadBalancer Service (Public Access)
+![LoadBalancer Service](evidence/screenshots/3-lb-service.png)
+
+### 4. Elite DORA Metrics Dashboard
+![DORA Dashboard](evidence/screenshots/Elite DORA Dashboards.png)
+
+### 5. Monitoring Stack (Prometheus/Grafana)
+![Monitoring Pods](evidence/screenshots/monitoring-pods.png)
+
+### 6. Docker Build Proof
+![Docker Images](evidence/screenshots/docker-images.png)
+
+---
+
+## 📁 Repository Structure
+```text
+NovaPay-CI-CD/
+├── .github/workflows/   # CI/CD Pipeline YAMLs
+├── app/                 # Application source code
+├── terraform/           # IaC modules
+├── dashboards/          # Grafana JSON exports
+├── docs/                # Deliverable specifications
+├── evidence/            # Project screenshots & validation
+├── policies/            # OPA Rego policies
+├── runbooks/            # Incident response & ops docs
+├── ERRATA.md            # Technical deviation log
+└── README.md            # This file
