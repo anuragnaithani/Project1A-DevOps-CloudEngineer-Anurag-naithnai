@@ -1,0 +1,53 @@
+name: NovaPay Bank CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  # STAGE 1: Build & Unit Test
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build and Test
+        run: |
+          echo "Building NovaPay Application..."
+          # Replace with your actual build command, e.g., ./mvnw clean package
+          sleep 5
+
+  # STAGE 2: SAST (Code Quality)
+  sast:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: SonarQube Scan
+        run: echo "Scanning for vulnerabilities with SonarQube..."
+
+  # STAGE 3: Container Security
+  scan:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trivy Container Scan
+        run: echo "Scanning image for Critical/High CVEs..."
+
+  # STAGE 4: Policy & Compliance Gate (OPA)
+  policy-gate:
+    needs: scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run OPA Policy Check
+        run: |
+          echo "Verifying K8s manifests against RBI Compliance..."
+          # Here you would run 'conftest test deployment.yaml'
+
+  # STAGE 5: Artifact Packaging
+  package:
+    needs: [sast, scan, policy-gate]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Version and Push to ECR
+        run: |
+          echo "Pushing image to ECR with tag: ${{ github.sha }}"
+          # docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/novapay:${{ github.sha }}
