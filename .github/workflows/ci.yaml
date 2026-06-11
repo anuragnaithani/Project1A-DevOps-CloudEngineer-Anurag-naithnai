@@ -1,53 +1,83 @@
-name: NovaPay Bank CI Pipeline
+name: NovaPay 8-Stage Bank CI/CD Pipeline
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  # STAGE 1: Build & Unit Test
-  build:
+  # 1. BUILD & UNIT TEST
+  build-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Build and Test
+      - name: Build App
         run: |
-          echo "Building NovaPay Application..."
-          # Replace with your actual build command, e.g., ./mvnw clean package
-          sleep 5
+          echo "Stage 1: Building NovaPay App..."
+          # docker build -t novapay:${{ github.sha }} ./app
 
-  # STAGE 2: SAST (Code Quality)
+  # 2. SAST (Static Analysis)
   sast:
-    needs: build
+    needs: build-test
     runs-on: ubuntu-latest
     steps:
-      - name: SonarQube Scan
-        run: echo "Scanning for vulnerabilities with SonarQube..."
+      - uses: actions/checkout@v3
+      - name: Run SAST Scan
+        run: |
+          echo "Stage 2: Running SonarQube SAST..."
 
-  # STAGE 3: Container Security
-  scan:
-    needs: build
+  # 3. DEPENDENCY SCAN (Trivy FS)
+  dependency-scan:
+    needs: build-test
     runs-on: ubuntu-latest
     steps:
-      - name: Trivy Container Scan
-        run: echo "Scanning image for Critical/High CVEs..."
+      - uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          severity: 'CRITICAL,HIGH'
 
-  # STAGE 4: Policy & Compliance Gate (OPA)
+  # 4. CONTAINER BUILD
+  container-build:
+    needs: [sast, dependency-scan]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Docker Build
+        run: |
+          echo "Stage 4: Building Container Image..."
+
+  # 5. CONTAINER SCAN (Trivy Image)
+  container-scan:
+    needs: container-build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trivy Image Scan
+        run: |
+          echo "Stage 5: Scanning Image for CVEs..."
+
+  # 6. POLICY GATE (OPA/Kyverno)
   policy-gate:
-    needs: scan
+    needs: container-scan
     runs-on: ubuntu-latest
     steps:
-      - name: Run OPA Policy Check
+      - name: OPA Compliance Check
         run: |
-          echo "Verifying K8s manifests against RBI Compliance..."
-          # Here you would run 'conftest test deployment.yaml'
+          echo "Stage 6: Checking K8s manifests against RBI/PCI-DSS rules..."
 
-  # STAGE 5: Artifact Packaging
-  package:
-    needs: [sast, scan, policy-gate]
+  # 7. DEPLOY TO EKS
+  deploy:
+    needs: policy-gate
     runs-on: ubuntu-latest
     steps:
-      - name: Version and Push to ECR
+      - name: Deploy to EKS
         run: |
-          echo "Pushing image to ECR with tag: ${{ github.sha }}"
-          # docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/novapay:${{ github.sha }}
+          echo "Stage 7: Deploying to production cluster (Blue-Green/Canary)..."
+
+  # 8. POST DEPLOY HEALTH CHECK
+  post-deploy:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verification Smoke Test
+        run: |
+          echo "Stage 8: Verifying Service Health..."
+          # curl -f https://api.novapay.com/health
