@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaPay | Platform Control Center</title>
+    <style>
+        :root {
+            --primary: #00bcd4;
+            --secondary: #1de9b6;
+            --background: #121212;
+            --surface: #1e1e1e;
+            --on-surface: #ffffff;
+            --text-secondary: #b0bec5;
+            --success: #66bb6a;
+            --accent: #ffeb3b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background);
+            color: var(--on-surface);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            width: 100%;
+            background-color: var(--surface);
+            padding: 20px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            text-align: center;
+            border-bottom: 3px solid var(--primary);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            letter-spacing: 2px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .status-container {
+            max-width: 1200px;
+            width: 90%;
+            margin: 40px 0;
+            padding: 30px;
+            background-color: var(--surface);
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .main-status {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .main-status h2 {
+            font-size: 2em;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .main-status p {
+            font-size: 1.3em;
+            color: var(--success);
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pulse {
+            height: 15px;
+            width: 15px;
+            background-color: var(--success);
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 0 rgba(102, 187, 106, 0.4);
+            animation: pulse-animation 2s infinite;
+        }
+
+        @keyframes pulse-animation {
+            0% { box-shadow: 0 0 0 0 rgba(102, 187, 106, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(102, 187, 106, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(102, 187, 106, 0); }
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .metric-card {
+            background-color: rgba(255,255,255,0.03);
+            padding: 25px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid transparent;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            background-color: rgba(255,255,255,0.05);
+            border: 1px solid var(--primary);
+        }
+
+        .metric-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 5px;
+            width: 100%;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+        }
+
+        .metric-title {
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .metric-value {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: var(--on-surface);
+        }
+
+        .metric-accent {
+            color: var(--secondary);
+        }
+
+        footer {
+            margin-top: auto;
+            width: 100%;
+            padding: 15px 0;
+            text-align: center;
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            background-color: rgba(0,0,0,0.3);
+        }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>NOVAPAY</h1>
+</header>
+
+<div class="status-container">
+    <div class="main-status">
+        <h2>Cluster Deployment</h2>
+        <p><span class="pulse"></span>Status: <span class="metric-accent">ACTIVE &amp; PRODUCTION-READY</span></p>
+    </div>
+
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-title">Platform Version</div>
+            <div class="metric-value">1.0.0</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-title">Infrastructure Engine</div>
+            <div class="metric-value">Terraform</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-title">Compute Environment</div>
+            <div class="metric-value">AWS EKS</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-title">Networking Layer</div>
+            <div class="metric-value">Multi-AZ <span class="metric-accent">Public</span></div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-title">Continuous Deployment</div>
+            <div class="metric-value">GitHub Actions</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-title">Application Container</div>
+            <div class="metric-value">Nginx <span class="metric-accent">Edge</span></div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>NovaPay Platform Control | Verified Infrastructure | 2026</p>
+</footer>
+
+</body>
+</html>
