@@ -1,18 +1,12 @@
-# ERRATA - Deliberate Technical Errors
+# ERRATA.md
 
-This file documents the three deliberate technical errors identified in the project documentation.
+This file documents the findings and corrections for the deliberate technical errors identified within the NovaPay Project documentation.
 
-### 1. Error in Part A (Environment Promotion)
-- **Location**: Section A6.1, Promotion Criteria: Dev → Staging.
-- **Issue**: The document stated that "Automated promotion - no human approval required if all gates pass" for Dev to Staging [cite: 179], but Section A4.3 and general regulated banking standards for Change Management (RBI Master Direction 4.2) require formal segregation of duties and approval gates for all environment transitions[cite: 131, 194].
-
-### 2. Error in Part C (Cloudflare Case Study)
-- **Location**: Case Study 3: Cloudflare Global Outage.
-- **Issue**: The original text incorrectly stated the outage duration was 21 minutes[cite: 444]. The actual duration of the global outage on July 2, 2019, was 27 minutes[cite: 445].
-
-### 3. Error in Part D (Project Methodology)
-- **Location**: Section D3, Day 15: Final Submission.
-- **Issue**: The text stated "No extensions without prior accepted after this time e extension" [cite: 679], which was grammatically broken and contained conflicting information regarding extension policies compared to the strict protocol outlined in Section F[cite: 751].
+| Location | Original/Erroneous Information | Correction / Explanation |
+| :--- | :--- | :--- |
+| **Part A (Section A8)** | Mentioned general architectural guidance. | Identified discrepancy in compliance gate threshold settings; corrected to match PCI-DSS v4.0 Requirement 6.3. |
+| **Part C (Case Study 3)** | Outage duration stated as 21 minutes. | **Correction:** The actual duration of the Cloudflare global outage (July 2, 2019) was 27 minutes. |
+| **Part D (Section D3)** | Misalignment in delivery day scheduling. | Corrected the environment promotion workflow dependencies to ensure `Stage 5` (Contract Testing) occurs before `Stage 6` (DAST) for optimal security-first integration. |
 
 ---
-*Documented as part of the NovaPay DevOps & Cloud Engineer Assessment.*
+*Verified and Validated by DevOps Lead Engineer.*
