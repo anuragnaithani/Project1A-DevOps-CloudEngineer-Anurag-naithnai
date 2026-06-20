@@ -1,6 +1,6 @@
 package kubernetes.admission
 
-deny[msg] {
+deny contains msg if {
   input.request.kind.kind == "Pod"
   container := input.request.object.spec.containers[_]
   container.securityContext.privileged == true
