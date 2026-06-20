@@ -1,39 +1,35 @@
-apiVersion: monitoring.coreos.com/v1
-kind: PrometheusRule
-metadata:
-  name: novapay-alerts
-  namespace: monitoring
-spec:
-  groups:
-  - name: novapay.rules
-    rules:
+groups:
+- name: novapay-alerts
+  rules:
 
-    # 🚨 Pod Down Alert
-    - alert: PodDown
-      expr: kube_pod_status_ready{condition="false"} == 1
-      for: 1m
-      labels:
-        severity: critical
-      annotations:
-        summary: "Pod is DOWN in NovaPay cluster"
-        description: "A pod is not in ready state"
+  - alert: HighErrorRate
+    expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.05
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: High HTTP 5xx error rate detected
 
-    # 🚨 High CPU Usage
-    - alert: HighCPUUsage
-      expr: (100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)) > 80
-      for: 5m
-      labels:
-        severity: warning
-      annotations:
-        summary: "High CPU usage detected"
-        description: "CPU usage is above 80%"
+  - alert: HighLatency
+    expr: histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m])) > 0.5
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: p99 latency exceeded threshold
 
-    # 🚨 High Memory Usage
-    - alert: HighMemoryUsage
-      expr: ((1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100) > 80
-      for: 5m
-      labels:
-        severity: warning
-      annotations:
-        summary: "High Memory usage detected"
-        description: "Memory usage is above 80%"
+  - alert: HighCPUUsage
+    expr: container_cpu_usage_seconds_total > 0.9
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: CPU utilization above 90%
+
+  - alert: HighMemoryUsage
+    expr: container_memory_usage_bytes > 0.85
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: Memory utilization above 85%

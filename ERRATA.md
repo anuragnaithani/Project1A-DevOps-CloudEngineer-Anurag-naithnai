@@ -1,50 +1,29 @@
-# 📄 ERRATA REPORT – NovaPay DevSecOps Project
+# ERRATA: Deliberate Technical Errors and Corrections
 
-## 🏦 Project: NovaPay Digital Banking CI/CD Platform  
-## 📌 Document Type: Technical Deviations & Corrections Log  
+## Error 1: Kubernetes RollingUpdate alone is not equal to complete zero-downtime banking deployment
 
-This document records intentional technical discrepancies identified during the NovaPay project design phase and their corresponding corrections aligned with industry standards (RBI, PCI-DSS v4.0, and DevSecOps best practices).
+Correction:
+A production-grade banking deployment should include blue-green and canary strategies with health checks, traffic switching, automated rollback, and post-deployment verification.
 
----
+Implemented Evidence:
+- k8s/blue-green/blue-green-deployment.yaml
+- k8s/canary/canary-deployment.yaml
+- runbooks/rollback-runbook.md
 
-## 📍 Part A (Section A8) – Compliance Gate Configuration
+## Error 2: Using latest container image tag in production is unsafe
 
-- **Original Issue:**  
-  General architectural guidance was provided without strict enforcement thresholds for compliance gates.
+Correction:
+Production deployments must use immutable image tags such as Git SHA or SemVer build metadata. The latest tag should not be used for regulated production workloads.
 
-- **Correction:**  
-  Updated compliance validation logic to align with **PCI-DSS v4.0 Requirement 6.3**, ensuring secure code review and vulnerability checks before deployment.
+Implemented Evidence:
+- GitHub Actions builds image using github.sha
+- README documents immutable artifact traceability
 
----
+## Error 3: Terraform state files must not be committed
 
-## 📍 Part C (Case Study 3) – Incident Duration Accuracy
+Correction:
+Terraform state may contain sensitive infrastructure values and must be stored in a secure remote backend such as S3 with DynamoDB locking and encryption.
 
-- **Original Issue:**  
-  Cloud outage duration was documented as **21 minutes**.
-
-- **Correction:**  
-  Verified historical data confirms the correct duration of the **Cloudflare Global Outage (July 2, 2019)** as **27 minutes**.
-
----
-
-## 📍 Part D (Section D3) – Deployment Workflow Sequencing
-
-- **Original Issue:**  
-  Misalignment in CI/CD stage execution order.
-
-- **Correction:**  
-  Updated pipeline flow to enforce security-first delivery:
-
-  ✔ Stage 5: Contract Testing  
-  ✔ Stage 6: Dynamic Application Security Testing (DAST)  
-
-This ensures vulnerabilities are detected before runtime exposure.
-
----
-
-## 📌 Verification Statement
-
-All corrections have been reviewed and aligned with DevSecOps best practices and compliance requirements.
-
-**Verified by:** DevOps Lead Engineer  
-**Status:** Approved for Final Submission
+Implemented Evidence:
+- .gitignore blocks *.tfstate and *.tfvars files
+- local terraform.tfstate files removed from root submission

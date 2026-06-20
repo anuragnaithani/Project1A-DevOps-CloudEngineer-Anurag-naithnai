@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: novapay-blue
+  labels:
+    app: novapay
+    version: blue
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: novapay
+      version: blue
+  template:
+    metadata:
+      labels:
+        app: novapay
+        version: blue
+    spec:
+      containers:
+        - name: novapay
+          image: novapay:blue
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: novapay-green
+  labels:
+    app: novapay
+    version: green
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: novapay
+      version: green
+  template:
+    metadata:
+      labels:
+        app: novapay
+        version: green
+    spec:
+      containers:
+        - name: novapay
+          image: novapay:green
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: novapay-service
+spec:
+  selector:
+    app: novapay
+    version: blue
+  ports:
+    - port: 80
+      targetPort: 80
+  type: LoadBalancer

@@ -1,111 +1,27 @@
-apiVersion: monitoring.coreos.com/v1
-kind: PrometheusRule
-metadata:
-  name: novapay-rbi-alerts
-  namespace: monitoring
-spec:
-  groups:
+groups:
+- name: rbi-compliance-alerts
+  rules:
 
-  # =========================
-  # 1. CRITICAL SYSTEM ALERTS
-  # =========================
-  - name: novapay.system.alerts
-    rules:
+  - alert: DeploymentFailure
+    expr: increase(kube_pod_container_status_restarts_total[5m]) > 3
+    for: 2m
+    labels:
+      severity: critical
+    annotations:
+      summary: Frequent pod restart detected
 
-    - alert: NodeHighCPUUsage
-      expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
-      for: 5m
-      labels:
-        severity: critical
-        compliance: rbi
-      annotations:
-        summary: "High CPU usage on node"
-        description: "CPU usage is above 80% for more than 5 minutes"
+  - alert: AvailabilityRisk
+    expr: up == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: Service availability risk
 
-    - alert: NodeMemoryHigh
-      expr: (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100 < 15
-      for: 5m
-      labels:
-        severity: critical
-        compliance: rbi
-      annotations:
-        summary: "Low Memory Available"
-        description: "Node memory available is below 15%"
-
-  # =========================
-  # 2. KUBERNETES WORKLOAD ALERTS
-  # =========================
-  - name: novapay.k8s.alerts
-    rules:
-
-    - alert: PodCrashLooping
-      expr: rate(kube_pod_container_status_restarts_total[10m]) > 0
-      for: 5m
-      labels:
-        severity: warning
-        compliance: rbi
-      annotations:
-        summary: "Pod is crash looping"
-        description: "Container is restarting frequently"
-
-    - alert: DeploymentReplicasDown
-      expr: kube_deployment_status_replicas_available < kube_deployment_spec_replicas
-      for: 5m
-      labels:
-        severity: critical
-        compliance: rbi
-      annotations:
-        summary: "Deployment not fully available"
-        description: "Some replicas are down"
-
-  # =========================
-  # 3. API / APPLICATION ALERTS
-  # =========================
-  - name: novapay.app.alerts
-    rules:
-
-    - alert: HighPodCPU
-      expr: sum(rate(container_cpu_usage_seconds_total[5m])) by (pod) > 0.8
-      for: 5m
-      labels:
-        severity: warning
-        compliance: rbi
-      annotations:
-        summary: "High CPU usage in application pod"
-        description: "Pod CPU usage is high"
-
-    - alert: HighPodMemory
-      expr: sum(container_memory_usage_bytes) by (pod) > 500000000
-      for: 5m
-      labels:
-        severity: warning
-        compliance: rbi
-      annotations:
-        summary: "High memory usage in pod"
-        description: "Pod memory usage is high"
-
-  # =========================
-  # 4. SECURITY / COMPLIANCE ALERTS
-  # =========================
-  - name: novapay.security.alerts
-    rules:
-
-    - alert: UnauthorizedRestarts
-      expr: increase(kube_pod_container_status_restarts_total[15m]) > 3
-      for: 0m
-      labels:
-        severity: critical
-        compliance: pci-dss
-      annotations:
-        summary: "Possible unstable container behavior"
-        description: "Frequent restarts detected (security risk indicator)"
-
-    - alert: NodeDown
-      expr: up == 0
-      for: 2m
-      labels:
-        severity: critical
-        compliance: rbi
-      annotations:
-        summary: "Node/Service Down"
-        description: "A monitored target is down"
+  - alert: ErrorBudgetBurn
+    expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.02
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: Error budget burn detected

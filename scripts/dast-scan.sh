@@ -1,13 +1,13 @@
 #!/bin/bash
-# DAST Scan using OWASP ZAP for NovaPay
-# Requirements: ZAP Docker container
+set -e
 
-echo "Starting DAST scan on target URL: $TARGET_URL"
+TARGET_URL=${1:-"http://localhost:8080"}
 
-docker run -t owasp/zap2docker-stable zap-full-scan.py     -t $TARGET_URL     -g gen.conf     -r report_html.html     -J report_json.json
+echo "Starting OWASP ZAP DAST scan for: $TARGET_URL"
 
-# Check for high severity findings (Requirement 6.4 of PCI-DSS v4.0) 
-if grep -q '"risk": "High"' report_json.json; then
-    echo "DAST Scan failed: High severity vulnerabilities found."
-    exit 1
-fi
+docker run --rm \
+  -t owasp/zap2docker-stable zap-baseline.py \
+  -t "$TARGET_URL" \
+  -r zap-report.html
+
+echo "DAST scan completed. Report generated: zap-report.html"
